@@ -170,11 +170,11 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
 router.post('/experience', passport.authenticate('jwt', { session: false }), (req, res) => {
     const { errors, isValid } = validateExperienceInput(req.body);
 
-    // Check Validation
-    if(!isValid) {
-        //Return any errors with 400 status
-        return res.status(400).json(errors); 
-    }
+    // Check validation 
+    if (!isValid) {
+        // Return any errors with 400 status
+        return res.status(400).json(errors);
+    } 
 
     Profile.findOne({ user: req.user.id })
         .then(profile => {
@@ -195,7 +195,7 @@ router.post('/experience', passport.authenticate('jwt', { session: false }), (re
 
             profile.save().then(profile => res.json(profile));
         })
-
+       
 })
 
 
