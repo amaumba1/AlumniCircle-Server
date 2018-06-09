@@ -29,11 +29,11 @@ router.post('/', passport.authenticate('jwt', {session: false }), (req, res) => 
         // if any errors, send 400 with errors object
         return res.status(400).json(errors);
     }
-    
+
     const newPost = new Post({
         text: req.body.text,
         name: req.body.name,
-        avatar: req.body.name, 
+        avatar: req.body.avatar, 
         user: req.user.id
     });
 
