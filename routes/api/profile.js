@@ -204,35 +204,39 @@ router.post('/experience', passport.authenticate('jwt', { session: false }), (re
 // @desc   Add education to profile  
 // @access Private 
 
-router.post('/education', passport.authenticate('jwt', { session: false }), (req, res) => {
-    const { errors, isValid } = validateEducationInput(req.body);
+router.post('/education',passport.authenticate('jwt', { session: false }),
+    async (req, res) => {
+        try {
+            const { errors, isValid } = validateEducationInput(req.body)
+            if (!isValid) {
+                return res.status(400).json(errors)
+            }
 
-    //Check validation 
-    if(!isValid) {
-        // Return any errors with 400 status
-        return res.status(400).json(errors);
-    }
+            let profile = await Profile.findOne({ user: req.user.id })
+            if (!profile) {
+                errors.noprofile = 'There is no profile for this user'
+                return res.status(404).json(errors)
+            }
 
-    Profile.findOne({ user: req.user.id })
-        .then(profile => {
-            const newEdu = {
+            const newEducation = {
                 school: req.body.school,
                 degree: req.body.degree,
                 fieldofstudy: req.body.fieldofstudy,
                 from: req.body.from,
                 to: req.body.to,
                 current: req.body.current,
-                description: req.body.description
+                descripton: req.body.descripton,
             }
 
-            // Add to exp array 
-            // use ushift to add education at the beginning 
-            // when use push will put it at the end
-            profile.education.unshift(newEdu);
+            // Add to experience array
+            profile.education.unshift(newEducation)
 
-            profile.save().then(profile => res.json(profile));
-        })
-
-})
+            profile = await profile.save()
+            return res.json(profile)
+        } catch (err) {
+            throw err
+        }
+    }
+)
 
 module.exports = router;
